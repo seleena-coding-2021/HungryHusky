@@ -1,71 +1,296 @@
-DROP DATABASE IF EXISTS ngo_db;
-CREATE DATABASE IF NOT EXISTS ngo_db;
+DROP DATABASE IF EXISTS `HungryHusky`;
+CREATE DATABASE `HungryHusky`;
+USE `HungryHusky`;
 
-USE ngo_db;
 
-
-CREATE TABLE IF NOT EXISTS WorldNGOs (
-    NGO_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Country VARCHAR(100) NOT NULL,
-    Founding_Year INTEGER,
-    Focus_Area VARCHAR(100),
-    Website VARCHAR(255)
+CREATE TABLE Student(
+StudentId int unsigned auto_increment,
+FirstName varchar(50) not null,
+LastName varchar(50) not null,
+Email varchar(50) not null,
+CampusId int,
+GradYear int,
+University varchar(50),
+PRIMARY KEY (StudentId),
+INDEX idx_email (Email)
 );
 
-CREATE TABLE IF NOT EXISTS Projects (
-    Project_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Project_Name VARCHAR(255) NOT NULL,
-    Focus_Area VARCHAR(100),
-    Budget DECIMAL(15, 2),
-    NGO_ID INT,
-    Start_Date DATE,
-    End_Date DATE,
-    FOREIGN KEY (NGO_ID) REFERENCES WorldNGOs(NGO_ID)
+
+CREATE TABLE Restaurant(
+RestaurantId int unsigned auto_increment,
+Name varchar(50) not null,
+Address varchar(50) not null,
+PriceRange varchar(50),
+Cuisine enum('Italian', 'Chinese', 'Mexican', 'Mediterranean', 'Indian', 'Fusion', 'American', 'Other') not null,
+DistFromCampus float,
+PRIMARY KEY (RestaurantId),
+INDEX (PriceRange)
 );
 
-CREATE TABLE IF NOT EXISTS Donors (
-    Donor_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Donor_Name VARCHAR(255) NOT NULL,
-    Donor_Type ENUM('Individual', 'Organization') NOT NULL,
-    Donation_Amount DECIMAL(15, 2),
-    NGO_ID INT,
-    FOREIGN KEY (NGO_ID) REFERENCES WorldNGOs(NGO_ID)
+
+
+
+CREATE TABLE DiningHall(
+HallId     int unsigned auto_increment,
+Name       varchar(50) not null,
+Location   varchar(50),
+CampusArea varchar(50),
+Capacity   int not null,
+PRIMARY KEY (HallId),
+INDEX (Name)
 );
 
-INSERT INTO WorldNGOs (Name, Country, Founding_Year, Focus_Area, Website)
-VALUES
-('World Wildlife Fund', 'United States', 1961, 'Environmental Conservation', 'https://www.worldwildlife.org'),
-('Doctors Without Borders', 'France', 1971, 'Medical Relief', 'https://www.msf.org'),
-('Oxfam International', 'United Kingdom', 1995, 'Poverty and Inequality', 'https://www.oxfam.org'),
-('Amnesty International', 'United Kingdom', 1961, 'Human Rights', 'https://www.amnesty.org'),
-('Save the Children', 'United States', 1919, 'Child Welfare', 'https://www.savethechildren.org'),
-('Greenpeace', 'Netherlands', 1971, 'Environmental Protection', 'https://www.greenpeace.org'),
-('International Red Cross', 'Switzerland', 1863, 'Humanitarian Aid', 'https://www.icrc.org'),
-('CARE International', 'Switzerland', 1945, 'Global Poverty', 'https://www.care-international.org'),
-('Habitat for Humanity', 'United States', 1976, 'Affordable Housing', 'https://www.habitat.org'),
-('Plan International', 'United Kingdom', 1937, 'Child Rights', 'https://plan-international.org');
 
-INSERT INTO Projects (Project_Name, Focus_Area, Budget, NGO_ID, Start_Date, End_Date)
-VALUES
-('Save the Amazon', 'Environmental Conservation', 5000000.00, 1, '2022-01-01', '2024-12-31'),
-('Emergency Medical Aid in Syria', 'Medical Relief', 3000000.00, 2, '2023-03-01', '2023-12-31'),
-('Education for All', 'Poverty and Inequality', 2000000.00, 3, '2021-06-01', '2025-05-31'),
-('Human Rights Advocacy in Asia', 'Human Rights', 1500000.00, 4, '2022-09-01', '2023-08-31'),
-('Child Nutrition Program', 'Child Welfare', 2500000.00, 5, '2022-01-01', '2024-01-01');
 
-INSERT INTO Donors (Donor_Name, Donor_Type, Donation_Amount, NGO_ID)
-VALUES
-('Bill & Melinda Gates Foundation', 'Organization', 10000000.00, 1),
-('Elon Musk', 'Individual', 5000000.00, 2),
-('Google.org', 'Organization', 2000000.00, 3),
-('Open Society Foundations', 'Organization', 3000000.00, 4),
-('Anonymous Philanthropist', 'Individual', 1000000.00, 5);
 
-CREATE TABLE model1_params (
-    sequence_number INT,
-    beta_vals TEXT
+CREATE TABLE Tag(
+TagId int unsigned auto_increment,
+Name varchar(50) not null,
+Category enum('cuisine preference', 'food type', 'allergen', 'other') not null,
+PRIMARY KEY (TagId)
 );
 
-INSERT INTO model1_params (sequence_number, beta_vals) VALUES
-(1, '[0.25, 0.45, 0.67]');
+
+
+
+CREATE TABLE SavedSpot(
+SavedId int unsigned auto_increment,
+StudentId int unsigned,
+HallId int unsigned,
+RestaurantId int unsigned,
+TagId int unsigned,
+DateAdded date NOT NULL,
+Notes tinytext,
+PRIMARY KEY (SavedId),
+CONSTRAINT fk1
+                FOREIGN KEY (StudentId) REFERENCES Student(StudentId)
+                    ON UPDATE RESTRICT
+                    ON DELETE CASCADE,
+CONSTRAINT fk2
+                  FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE,
+CONSTRAINT fk3
+                  FOREIGN KEY (RestaurantId) REFERENCES Restaurant(RestaurantId)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE,
+CONSTRAINT fk4
+                  FOREIGN KEY (TagId) REFERENCES Tag(TagId)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE Review(
+ReviewId int unsigned auto_increment,
+StudentId int unsigned,
+HallId int unsigned,
+RestaurantId int unsigned,
+Rating int not null check(Rating in (1, 2, 3, 4, 5)),
+Comment varchar(150),
+AllergenFlag varchar(50),
+PriceRating int,
+ReviewDate date not null,
+PRIMARY KEY (ReviewId),
+INDEX (Rating),
+INDEX (PriceRating),
+CONSTRAINT fk5
+               FOREIGN KEY (StudentId) REFERENCES Student(StudentId)
+                 ON UPDATE CASCADE
+                 ON DELETE SET NULL,
+CONSTRAINT fk6
+                FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                 ON UPDATE CASCADE
+                 ON DELETE CASCADE,
+CONSTRAINT fk7
+               FOREIGN KEY (RestaurantId) REFERENCES Restaurant(RestaurantId)
+                 ON UPDATE CASCADE
+                 ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE WaitTime(
+RestaurantId int unsigned,
+EstimatedMin int unsigned not null,
+TimeStamp timestamp not null,
+PRIMARY KEY (RestaurantId, TimeStamp),
+INDEX (EstimatedMin),
+CONSTRAINT fk8
+                 FOREIGN KEY (RestaurantId) REFERENCES Restaurant(RestaurantId)
+                   ON UPDATE CASCADE
+                   ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE OperatingHours(
+HallId int unsigned,
+DayOfWeek enum('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') not null,
+OpenTime timestamp not null,
+CloseTime timestamp not null,
+Note tinytext,
+PRIMARY KEY (HallId, DayOfWeek),
+CONSTRAINT fk9
+                FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                         ON UPDATE CASCADE
+                         ON DELETE CASCADE
+);
+
+
+CREATE TABLE Allergen(
+AllergenId int unsigned not null,
+AllergyName varchar(30) UNIQUE,
+Severity enum('mild', 'moderate', 'severe') not null,
+PRIMARY KEY (AllergenId)
+);
+
+
+CREATE TABLE UsageStats(
+HallId int unsigned,
+TimeStamp timestamp not null,
+VisitorCount int not null,
+PeakHour time,
+DayOfWeek enum('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') not null,
+PRIMARY KEY (HallId, TimeStamp),
+INDEX (DayOfWeek),
+CONSTRAINT fk10
+                   FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                     ON UPDATE CASCADE
+                     ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE MenuItem(
+ItemId int unsigned not null,
+HallId int unsigned,
+ItemName varchar(30) not null,
+Description tinytext,
+Category enum('Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert', 'Other') not null,
+IsAvailable boolean not null,
+PRIMARY KEY (ItemId),
+INDEX (ItemName),
+INDEX (IsAvailable),
+CONSTRAINT fk13
+                 FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                   ON UPDATE CASCADE
+                   ON DELETE CASCADE
+);
+
+
+CREATE TABLE Admin(
+AdminId int unsigned not null,
+HallId int unsigned,
+FirstName varchar(50) not null,
+LastName varchar(50) not null,
+Email varchar(50),
+Role varchar(50),
+Department varchar(50),
+PRIMARY KEY (AdminId),
+CONSTRAINT fk15
+              FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                ON UPDATE CASCADE
+                ON DELETE SET NULL
+);
+
+
+
+
+CREATE TABLE Report(
+ReportId int unsigned not null,
+AdminId int unsigned,
+Title varchar(30),
+ExportDate date,
+Format enum('PDF', 'CSV', 'Excel') not null,
+StartDate date not null,
+EndDate date not null,
+PRIMARY KEY (ReportId),
+CONSTRAINT fk16
+               FOREIGN KEY (AdminId) REFERENCES Admin(AdminId)
+                 ON UPDATE CASCADE
+                 ON DELETE SET NULL
+);
+
+
+
+
+CREATE TABLE StudentFeedback(
+FeedbackSubmissionId int unsigned not null,
+DietaryRestriction enum('vegan','vegetarian','pescatarian', 'gluten-free', 'halal','kosher','dairy-free','nut-free','egg-free'),
+HallId int unsigned,
+Content mediumtext,
+SubmittedDate date not null,
+Status enum('positive', 'negative', 'neutral') not null,
+CuisinePref enum('Italian', 'Chinese', 'Mexican', 'Mediterranean', 'Indian', 'Fusion', 'American', 'Other') not null,
+StudentId int unsigned,
+PRIMARY KEY (FeedbackSubmissionId),
+INDEX (SubmittedDate),
+INDEX (Status),
+CONSTRAINT fk17
+                 FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                          ON UPDATE CASCADE
+                          ON DELETE CASCADE,
+CONSTRAINT fk19
+                 FOREIGN KEY (StudentId) REFERENCES Student(StudentId)
+                          ON UPDATE CASCADE
+                          ON DELETE SET NULL
+);
+
+
+
+
+CREATE TABLE DiningStation(
+StationId int unsigned not null,
+HallId int unsigned,
+ItemId int unsigned,
+Name varchar(30) not null,
+WaitMinutes int unsigned not null,
+UpdatedAt datetime default current_timestamp not null,
+PRIMARY KEY (StationId),
+CONSTRAINT fk20
+                FOREIGN KEY (HallId) REFERENCES DiningHall(HallId)
+                        ON UPDATE CASCADE
+                        ON DELETE CASCADE,
+CONSTRAINT fk21
+                FOREIGN KEY (ItemId) REFERENCES MenuItem(ItemId)
+                        ON UPDATE CASCADE
+                        ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE MenuItemAllergen(
+ItemId int unsigned not null,
+AllergenId int unsigned not null,
+PRIMARY KEY (ItemId, AllergenId),
+CONSTRAINT fk22
+                FOREIGN KEY (ItemId) REFERENCES MenuItem(ItemId)
+                           ON UPDATE CASCADE
+                           ON DELETE CASCADE,
+CONSTRAINT fk23
+                FOREIGN KEY (AllergenId) REFERENCES Allergen(AllergenId)
+                           ON UPDATE CASCADE
+                           ON DELETE RESTRICT
+);
+
+
+CREATE TABLE StudentAllergen(
+   StudentId int unsigned not null,
+   AllergenId int unsigned not null,
+   PRIMARY KEY (StudentId, AllergenId),
+   CONSTRAINT fk24
+       FOREIGN KEY (StudentId) REFERENCES Student(StudentId)
+                ON UPDATE CASCADE
+                ON DELETE RESTRICT,
+   CONSTRAINT fk25
+                FOREIGN KEY (AllergenId) REFERENCES Allergen(AllergenId)
+                           ON UPDATE CASCADE
+                           ON DELETE RESTRICT
+);
