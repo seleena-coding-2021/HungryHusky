@@ -3,11 +3,12 @@ from backend.db_connection import get_db
 from mysql.connector import Error
 
 # Create a Blueprint for NGO routes
-students = Blueprint("students", __name__)
+student = Blueprint("student", __name__)
 
 # retrieve the students/{id}/allergen-profile route
 # required field: id
-@students.route("/students/<int:id>/allergen-profile", methods = ["GET"])
+# user stories: [Alex-4] [Alex-1]
+@student.route("/students/<int:id>/allergen-profile", methods = ["GET"])
 def get_allergen_profile(id):
     cursor = get_db().cursor(dictionary=True)
     try:
@@ -18,16 +19,17 @@ def get_allergen_profile(id):
             FROM Student S JOIN StudentAllergen SA ON S.StudentId = SA.StudentId
                 JOIN Allergen A ON SA.AllergenId = A.AllergenId
             WHERE SA.StudentId = %s""", (id,))
-        allergen-profile = cursor.fetchall()
-        return jsonify(students), 200
+        allergen_profile = cursor.fetchall()
+        return jsonify(allergen_profile), 200
     except Error as e:
         return jsonify({"error" : str(e)}), 500
     finally:
         cursor.close()
 
 #create new student review
-#required fields: StudentId, HallId, RestaurantId, Rating, Comment, AllergenFlag, PriceRating, ReviewDate
-@students.route("/students/<int:id>/review", methods = ["POST"])
+#required fields: studentId
+#user stories: [Ryan-4]
+@student.route("/students/<int:id>/review", methods = ["POST"])
 def create_student_review(id):
     cursor = get_db().cursor(dictionary=True)
     try:
@@ -62,7 +64,7 @@ def create_student_review(id):
 
         get_db().commit()
         
-        return jsonify({"message": "Revoew created successfully", "ReviewId": cursor.lastrowid}), 201
+        return jsonify({"message": "Review created successfully", "ReviewId": cursor.lastrowid}), 201
         
     except Error as e:
         return jsonify({"error": str(e)}), 500
@@ -71,8 +73,9 @@ def create_student_review(id):
         cursor.close()
 
 #update student's allergen profile
-#required fields: id, any other fields that need to be updated
-@students.route("/students/<int:id>/allergen-profile", methods = ["PUT"])
+#required fields: student id
+# user stories: [Alex-1]
+@student.route("/students/<int:id>/allergen-profile", methods = ["PUT"])
 def update_allergen_profile(id):
     cursor = get_db().cursor(dictionary=True)
     try:
@@ -105,7 +108,8 @@ def update_allergen_profile(id):
         
 #delete review written by student
 #required field is student id and review id
-@students.route("/students/<int:student_id>/reviews/<int:review_id>", methods = ["DELETE"])
+#user stories: [Ryan-4]
+@student.route("/students/<int:student_id>/reviews/<int:review_id>", methods = ["DELETE"])
 def delete_review(student_id, review_id):
     cursor = get_db().cursor(dictionary=True)
     try:
@@ -121,6 +125,80 @@ def delete_review(student_id, review_id):
     
     except Error as e:
         return jsonify({"error": str(e)}), 500
+# Gets all the saved spots for a given user
+@students.route('/students/<student_id>/savedspots', methods=["GET"])
+def get_saved_spots(student_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM SavedSpot WHERE StudentId = %s", (student_id,))
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# Saves a spot to eat at
+@students.route('/students/<student_id>/savedspots', methods=["POST"])
+def create_saved_spot(student_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        data = request.get_json()
+        hall_id = data.get("HallId")
+        restaurant_id = data.get("RestaurantId")
+
+        required_fields = ["DateAdded"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error:": f"Missing required field: {field}"}), 400
+        
+        if not hall_id and not restaurant_id:
+            return jsonify({"error": f"A restaurant or dining hall must be entered"}), 400
+        
+        if restaurant_id and hall_id:
+            return jsonify({"error": f" Both a restaurant and dining hall cannot be saved"}), 400
+        
+        query = """
+            INSERT INTO SavedSpot (StudentId, HallId, RestaurantId, TagId, DateAdded, Notes)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (
+        student_id,
+        hall_id,
+        restaurant_id,
+        data.get("TagId"),
+        data["DateAdded"],
+        data.get("Notes")
+        ))
+        get_db().commit()
+        return jsonify({"message": "Spot saved successfully", "saved_id": cursor.lastrowid}), 201
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# Remove a saved spot from a students list
+@students.route("/students/<student_id>/savedspots/<saved_id>", methods=["DELETE"])
+def delete_saved_spot(student_id, saved_id):
+    cursor = get_db().cursor(dictionary=True)
+
+    query = """DELETE FROM SavedSpot WHERE StudentId = %s AND SavedId = %s"""
+    data = (student_id, saved_id)
+    cursor.execute(query, data)
+    get_db().commit()
+    return 'Saved Spot successfully deleted'
+
+# Get all reviews written by a student
+@students.route("/students/<student_id>/reviews", methods=["GET"])
+def get_reviews(student_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM Review WHERE StudentId = %s", (student_id,))
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+>>>>>>> eee1c32df74ee974806d1a62efc82d1125303018
+    finally:
+        cursor.close()
 
     finally:
         cursor.close()
