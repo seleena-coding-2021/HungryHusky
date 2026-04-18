@@ -64,7 +64,7 @@ if st.button("Act as Alex, Freshman Student",
 # ***************************************************
 #    Persona 2: Ryan Jacob -- Senior Off-Campus Student
 # ***************************************************
-    
+
 if st.button('Act as Ryan, a Senior Student',
              type='primary',
              use_container_width=True):
