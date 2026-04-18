@@ -3,19 +3,19 @@ from backend.db_connection import get_db
 from mysql.connector import Error
 
 # Create a Blueprint for student routes
-student = Blueprint("student", __name__)
+students = Blueprint("students", __name__)
 
 # retrieve the students/{id}/allergen-profile route
 # required field: id
 # user stories: [Alex-4] [Alex-1]
-@student.route("/student/<int:id>/allergen-profile", methods=["GET"])
+@students.route("/student/<int:id>/allergen-profile", methods=["GET"])
 def get_allergen_profile(id):
     cursor = get_db().cursor(dictionary=True)
     try:
         cursor.execute(
             """
             SELECT s.StudentId,
-                   a.AllergenName,
+                   a.AllergyName,
                    a.Severity
             FROM Student s
             JOIN StudentAllergen sa ON s.StudentId = sa.StudentId
@@ -37,7 +37,7 @@ def get_allergen_profile(id):
 # create new student review
 # required fields: studentId
 # user stories: [Ryan-4]
-@student.route("/student/<int:id>/review", methods=["POST"])
+@students.route("/student/<int:id>/review", methods=["POST"])
 def create_student_review(id):
     cursor = get_db().cursor(dictionary=True)
     try:
@@ -86,7 +86,7 @@ def create_student_review(id):
 # update student's allergen profile
 # required fields: student id
 # user stories: [Alex-1]
-@student.route("/student/<int:id>/allergen-profile", methods=["PUT"])
+@students.route("/student/<int:id>/allergen-profile", methods=["PUT"])
 def update_allergen_profile(id):
     cursor = get_db().cursor(dictionary=True)
     try:
@@ -123,7 +123,7 @@ def update_allergen_profile(id):
 # delete review written by student
 # required field is student id and review id
 # user stories: [Ryan-4]
-@student.route("/student/<int:student_id>/reviews/<int:review_id>", methods=["DELETE"])
+@students.route("/student/<int:student_id>/reviews/<int:review_id>", methods=["DELETE"])
 def delete_review(student_id, review_id):
     cursor = get_db().cursor(dictionary=True)
     try:

@@ -2,12 +2,12 @@ from flask import Blueprint, jsonify, request, current_app
 from backend.db_connection import get_db
 from mysql.connector import Error
 
-restaurant = Blueprint('restaurant', __name__)
+restaurants = Blueprint('restaurants', __name__)
 
 # retrieve the /restaurant/{restaurant_id}/waittime route
 # required field: restaurant_id
 # user stories: [Ryan-5] [Alex-5]
-@restaurant.route("/restaurant/<int:restaurant_id>/waittime", methods=["GET"])
+@restaurants.route("/restaurant/<int:restaurant_id>/waittime", methods=["GET"])
 def get_restaurant_waittime(restaurant_id):
     cursor = get_db().cursor(dictionary=True)
     try:
@@ -35,7 +35,7 @@ def get_restaurant_waittime(restaurant_id):
 # create new restaurant wait time estimate
 # required fields: EstimatedMin, TimeStamp
 # user stories: [Ryan-5]
-@restaurant.route("/restaurant/<int:restaurant_id>/waittime", methods=["POST"])
+@restaurants.route("/restaurant/<int:restaurant_id>/waittime", methods=["POST"])
 def create_restaurant_waittime(restaurant_id):
     cursor = get_db().cursor(dictionary=True)
     try:
