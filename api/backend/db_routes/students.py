@@ -61,7 +61,7 @@ def create_saved_spot(student_id):
 def delete_saved_spot(student_id, saved_id):
     cursor = get_db().cursor(dictionary=True)
 
-    query = """DELETE FROM SavedSpot WHERE student_id = %s AND saved_id = %s"""
+    query = """DELETE FROM SavedSpot WHERE StudentId = %s AND SavedId = %s"""
     data = (student_id, saved_id)
     cursor.execute(query, data)
     get_db().commit()
@@ -72,7 +72,7 @@ def delete_saved_spot(student_id, saved_id):
 def get_reviews(student_id):
     cursor = get_db().cursor(dictionary=True)
     try:
-        cursor.execute("SELECT * FROM Review WHERE StudentId = %s", (student_id))
+        cursor.execute("SELECT * FROM Review WHERE StudentId = %s", (student_id,))
         return jsonify(cursor.fetchall()), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
