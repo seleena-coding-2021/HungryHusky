@@ -1,6 +1,7 @@
 ##################################################
-# This is the main/entry-point file for the
-# sample application for your project
+# Home.py
+# Main entry point for the HungryHusky application
+# users select which persona they want to log in as
 ##################################################
 
 # Set up basic logging infrastructure
@@ -33,40 +34,69 @@ SideBarLinks(show_home=True)
 # ***************************************************
 
 logger.info("Loading the Home page of the app")
-st.title('CS 3200 Project Template')
-st.write('#### Hi! As which user would you like to log in?')
+st.title('HungryHusky')
+st.write('#### Hi! Which user would you like to log in as?')
 
 # For each of the user personas for which we are implementing
 # functionality, we put a button on the screen that the user
 # can click to MIMIC logging in as that mock user.
 
-if st.button("Act as John, a Political Strategy Advisor",
+# ***************************************************
+#    Persona 1: Alex Smith -- Freshman with Nut Allergy
+# ***************************************************
+
+if st.button("Act as Alex, Freshman Student",
              type='primary',
              use_container_width=True):
     # when user clicks the button, they are now considered authenticated
     st.session_state['authenticated'] = True
     # we set the role of the current user
-    st.session_state['role'] = 'pol_strat_advisor'
+    st.session_state['role'] = 'student_alex'
     # we add the first name of the user (so it can be displayed on
     # subsequent pages).
-    st.session_state['first_name'] = 'John'
+    st.session_state['first_name'] = 'Alex'
+    st.session_state['student_id'] = 158088292
     # finally, we ask streamlit to switch to another page, in this case, the
     # landing page for this particular user type
-    logger.info("Logging in as Political Strategy Advisor Persona")
-    st.switch_page('pages/00_Pol_Strat_Home.py')
+    logger.info("Logging in as Alex (Freshman Student)")
+    st.switch_page('pages/00_Alex_Home.py')
 
-if st.button('Act as Mohammad, a USAID Worker',
+# ***************************************************
+#    Persona 2: Ryan Jacob -- Senior Off-Campus Student
+# ***************************************************
+    
+if st.button('Act as Ryan, a Senior Student',
              type='primary',
              use_container_width=True):
     st.session_state['authenticated'] = True
-    st.session_state['role'] = 'usaid_worker'
-    st.session_state['first_name'] = 'Mohammad'
-    st.switch_page('pages/10_USAID_Worker_Home.py')
+    st.session_state['role'] = 'student_ryan'
+    st.session_state['first_name'] = 'Ryan'
+    st.session_state['student_id'] = 190378124
+    logger.info("Logging in as Ryan (Senior Student)")
+    st.switch_page('pages/10_Ryan_Home.py')
 
-if st.button('Act as System Administrator',
+# ***************************************************
+#    Persona 3: Mary Johnson - Campus Dining Services Manager
+# ***************************************************
+if st.button('Act as Mary, a Dining Services Manager',
              type='primary',
              use_container_width=True):
     st.session_state['authenticated'] = True
-    st.session_state['role'] = 'administrator'
-    st.session_state['first_name'] = 'SysAdmin'
-    st.switch_page('pages/20_Admin_Home.py')
+    st.session_state['role'] = 'dining_manager'
+    st.session_state['first_name'] = 'Mary'
+    st.session_state['admin_id'] = 2
+    logger.info("Logging in as Mary (Dining Services Manager)")
+    st.switch_page('pages/20_Mary_Home.py')
+
+# ***************************************************
+# Persona 4: Dr. Charlotte Garcia — Director of Campus Food Services
+# ***************************************************
+if st.button("Act as Dr. Garcia, Director of Campus Food Services",
+             type='primary',
+             use_container_width=True):
+    st.session_state['authenticated'] = True
+    st.session_state['role'] = 'director'
+    st.session_state['first_name'] = 'Charlotte'
+    st.session_state['admin_id'] = 1
+    logger.info("Logging in as Dr. Garcia (Director)")
+    st.switch_page('pages/30_Charlotte_Home.py')
