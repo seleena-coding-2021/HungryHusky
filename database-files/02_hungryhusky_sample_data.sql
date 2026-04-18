@@ -625,8 +625,8 @@ INSERT INTO `SavedSpot` (`SavedId`, `StudentId`, `HallId`, `RestaurantId`, `TagI
 
 
 INSERT INTO `Student` (`StudentId`, `FirstName`, `LastName`, `Email`, `CampusId`, `GradYear`, `University`) VALUES
-(158088292, 'Rita', 'Adellach', 'rita.adellach@husky.northeastern.edu', 1, 2034, 'Northeastern'),
-(190378124, 'Léopold', 'Said', 'léopold.said@ug.northeastern.edu', 1, 2034, 'Northeastern'),
+(158088292, 'Alex', 'Smith', 'alex.smith@husky.northeastern.edu', 1, 2029, 'Northeastern'),
+(190378124, 'Ryan', 'Jacob', 'ryan.jacob@ug.northeastern.edu', 1, 2026, 'Northeastern'),
 (197261453, 'Lara', 'Mukonkole', 'lara.mukonkole@northeastern.edu', 1, 2036, 'Northeastern'),
 (230487833, 'Simon', 'Fuimaono', 'simon.fuimaono@northeastern.edu', 1, 2032, 'Northeastern'),
 (243651497, 'Siara', 'Holmberg', 'siara.holmberg@students.northeastern.edu', 1, 2027, 'Northeastern'),
