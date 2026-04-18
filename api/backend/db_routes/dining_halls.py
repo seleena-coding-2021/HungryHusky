@@ -289,6 +289,33 @@ def get_cuisine_preferences():
         cursor.close()
 
 
+# GET /dining-halls/studentfeedback
+@dining_halls.route("/studentfeedback", methods=["GET"])
+def get_cuisine_preferences():
+    """Returns cuisine preferences aggregated across all student feedback."""
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        current_app.logger.info('fetching cuisine preferences from student feedback')
+
+        cursor.execute("""
+            SELECT CuisinePref, COUNT(*) AS RequestCount
+            FROM StudentFeedback
+            WHERE CuisinePref IS NOT NULL
+            GROUP BY CuisinePref
+            ORDER BY RequestCount DESC
+        """)
+        preferences = cursor.fetchall()
+
+        current_app.logger.info(f'found {len(preferences)} cuisine preference(s)')
+        return jsonify(preferences), 200
+
+    except Error as e:
+        get_db().rollback()
+        current_app.logger.error(f'error fetching cuisine preferences: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
 # PUT /dining-halls/<hall_id>/operatinghours/<day_of_week>
 @dining_halls.route("/<int:hall_id>/operatinghours/<string:day_of_week>", methods=["PUT"])
 def update_operating_hours(hall_id, day_of_week):
