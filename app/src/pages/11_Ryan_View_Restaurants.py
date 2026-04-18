@@ -5,6 +5,7 @@ logger = logging.getLogger(__name__)
 import streamlit as st
 from modules.nav import SideBarLinks
 import requests
+from datetime import date
 
 st.set_page_config(layout="wide")
 
@@ -62,3 +63,42 @@ except:
     st.write("Could not connect to database to retrieve restaurants")
 
 st.subheader("Restaurant Details", divider="gray")
+
+restaurant_names = {r["Name"]: r["RestaurantId"] for r in restaurants}
+
+selected_rest = st.selectbox("Select a restaurant", list(restaurant_names.keys()))
+
+if selected_rest:
+    selected_id = restaurant_names[selected_rest]
+    restaurant = requests.get(f'http://web-api:4000/restaurants/{selected_id}', timeout=10).json()
+    with st.container(border=True):
+        st.subheader(f"**{restaurant['Name']}**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write(f"**Address:** {restaurant['Address']}")
+            st.write(f"**Price Range:** {restaurant['PriceRange']}")
+            st.write(f"**Cuisine:** {restaurant['Cuisine']}")
+        with col2:
+            st.write(f"**Distance from Campus:** {restaurant['DistFromCampus']}")
+            st.write(f"**Average Rating:** {restaurant['AvgRating']}")
+            st.write(f"**From {restaurant['NumReviews']} Review(s):**")
+
+st.subheader("Save a Restaurant", divider="gray")
+
+select_to_save = st.selectbox("Select a restaurant to save", [""] + list(restaurant_names.keys()))
+
+if select_to_save:
+    selected_id = restaurant_names[select_to_save]
+    if st.button("Save Spot"):
+        response = requests.post(f'http://web-api:4000/restaurants/{selected_id}',
+                    json={
+                    "RestaurantId": selected_id,
+                    "DateAdded": date.today().isoformat(),
+                    "studentId": 158088292
+                    },
+                    headers={"Content-Type": "application/json"}, timeout=10).json()
+        if "error" not in response:
+            st.success(f"Saved {select_to_save} to your spots!")
+        else:
+            st.error(response["error"])
+        
