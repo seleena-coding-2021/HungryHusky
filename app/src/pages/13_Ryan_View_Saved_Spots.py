@@ -31,7 +31,7 @@ stu_id_del = st.number_input("Please enter your student id", min_value=0, step=1
 saved_id = st.number_input("Please enter the SavedId of the spot to delete", min_value=0, step=1, key="del_saved_id")
 
 if stu_id_del > 0 and saved_id > 0:
-    if st.button("Delete a saved spot"):
+    if st.button("Delete saved spot"):
         response = requests.delete(f'http://web-api:4000/students/{int(stu_id_del)}/savedspots/{int(saved_id)}', timeout=10)
         if response.status_code == 200:
             st.success("Spot deleted successfully!")
