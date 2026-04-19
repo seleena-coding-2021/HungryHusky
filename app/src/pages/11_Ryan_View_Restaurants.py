@@ -66,7 +66,9 @@ if selected_rest:
 
 st.subheader("Save a Restaurant", divider="gray")
 
-select_to_save = st.selectbox("Select a restaurant to save", [""] + list(restaurant_names.keys()))
+with st.container(border=True):
+    select_to_save = st.selectbox("Select a restaurant to save", [""] + list(restaurant_names.keys()))
+    notes = st.text_input("Notes")
 
 if select_to_save:
     selected_id = restaurant_names[select_to_save]
@@ -75,7 +77,8 @@ if select_to_save:
                     json={
                     "RestaurantId": selected_id,
                     "DateAdded": date.today().isoformat(),
-                    "studentId": 158088292
+                    "studentId": 158088292,
+                    "notes": notes
                     },
                     headers={"Content-Type": "application/json"}, timeout=10).json()
         if "error" not in response:
