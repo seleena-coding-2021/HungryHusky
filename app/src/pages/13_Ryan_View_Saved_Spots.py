@@ -25,7 +25,7 @@ if stu_id > 0:
     except:
         st.write("Could not connect to database to retrieve saved spots")
 
-st.subheader("Delete a saved spot", divider="gray")
+st.subheader("Delete a Saved Spot", divider="gray")
 
 stu_id_del = st.number_input("Please enter your student id", min_value=0, step=1, key="del_stu_id")
 saved_id = st.number_input("Please enter the SavedId of the spot to delete", min_value=0, step=1, key="del_saved_id")
