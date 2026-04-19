@@ -79,7 +79,7 @@ if selected_rest:
             st.write(f"**Price Range:** {restaurant['PriceRange']}")
             st.write(f"**Cuisine:** {restaurant['Cuisine']}")
         with col2:
-            st.write(f"**Distance from Campus:** {restaurant['DistFromCampus']}")
+            st.write(f"**Distance from Campus (mi):** {restaurant['DistFromCampus']}")
             st.write(f"**Average Rating:** {restaurant['AvgRating']}")
             st.write(f"**From {restaurant['NumReviews']} Review(s):**")
 
@@ -101,4 +101,40 @@ if select_to_save:
             st.success(f"Saved {select_to_save} to your spots!")
         else:
             st.error(response["error"])
-        
+
+st.subheader("View a Wait Time", divider="gray")
+
+view = st.selectbox("Select a restaurant to view a wait time", [""] + list(restaurant_names.keys()))
+
+if view:
+    view_id = restaurant_names[view]
+    wait_times = requests.get(f'http://web-api:4000/restaurants/restaurant/{view_id}/waittime', timeout=10).json()
+    if not wait_times:
+        with st.container(border=True):
+            st.write(f"No wait times have been posted for {view} yet!")
+    if wait_times:
+        latest = wait_times[0]
+        with st.container(border=True):
+            st.subheader(f"**{latest['Name']}**")
+            if latest['EstimatedMin']:
+                st.write(f"**Most recent wait time (min)**: {latest['EstimatedMin']}")
+
+st.subheader("Add a Wait Time", divider="gray")
+
+with st.container(border=True):
+    rest_to_post = st.selectbox("Select a restaurant to post a wait time about", [""] + list(restaurant_names.keys()))
+    wait_min = st.selectbox("Wait Time Estimate (min):", ["10", "20", "30", "40", "60", "90", "120"])
+
+if rest_to_post:
+    rest_id = restaurant_names[rest_to_post]
+    if st.button("Add a wait time estimate"):
+        response = requests.post(f'http://web-api:4000/restaurants/restaurant/{rest_id}/waittime',
+                    json={
+                    "EstimatedMin": wait_min,
+                    "TimeStamp": date.today().isoformat(),
+                    },
+                    headers={"Content-Type": "application/json"}, timeout=10).json()
+        if "error" not in response:
+            st.success(f"Added your wait time estimate!")
+        else:
+            st.error(response["error"])

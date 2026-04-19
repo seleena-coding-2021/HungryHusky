@@ -236,6 +236,7 @@ def get_restaurant_waittime(restaurant_id):
             FROM Restaurant R
             JOIN WaitTime W ON R.RestaurantId = W.RestaurantId
             WHERE W.RestaurantId = %s
+            ORDER BY W.TimeStamp DESC
             """,
             (restaurant_id,)
         )
