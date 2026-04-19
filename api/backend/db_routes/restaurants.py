@@ -42,32 +42,6 @@ def get_restaurants():
         cursor.close()
 
 
-# Get all restaurants within a specific distance (miles) from campus.
-# note: Flask cannot distinguish /restaurants/<distance> from
-# /restaurants/<restaurant_id> since both are dynamic segments
-# /restaurants/within/<distance> avoids that conflict
-# User stories: Alex-2
-@restaurants.route('/within/<float:distance>', methods=['GET'])
-def get_restaurants_by_distance(distance):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        current_app.logger.info(f'GET /restaurants/within/{distance}')
-
-        cursor.execute('''
-            SELECT RestaurantId, Name, Address, PriceRange, Cuisine, DistFromCampus
-            FROM   Restaurant
-            WHERE  DistFromCampus <= %s
-            ORDER  BY DistFromCampus ASC
-        ''', (distance,))
-
-        return jsonify(cursor.fetchall()), 200
-    except Error as e:
-        current_app.logger.error(f'GET restaurants by distance error: {e}')
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-
 # Get full detail for a single restaurant including average rating
 # and most recent wait time.
 # User stories: Ryan-1
@@ -236,6 +210,7 @@ def get_restaurant_waittime(restaurant_id):
             FROM Restaurant R
             JOIN WaitTime W ON R.RestaurantId = W.RestaurantId
             WHERE W.RestaurantId = %s
+            ORDER BY W.TimeStamp DESC
             """,
             (restaurant_id,)
         )
