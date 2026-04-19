@@ -135,6 +135,6 @@ if rest_to_post:
                     },
                     headers={"Content-Type": "application/json"}, timeout=10).json()
         if "error" not in response:
-            st.success(f"Added your wait time estimate!")
+            st.success("Added your wait time estimate!")
         else:
             st.error(response["error"])
