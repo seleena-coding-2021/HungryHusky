@@ -39,7 +39,7 @@ restaurants = requests.get('http://web-api:4000/restaurants/', params=params, ti
 
 try:
     st.dataframe(restaurants, column_order=["Name", "PriceRange","DistFromCampus", "Cuisine",
-                                            "Address", ])
+                                            "Address", "RestaurantId", ])
 except:
     st.write("Could not connect to database to retrieve restaurants")
 

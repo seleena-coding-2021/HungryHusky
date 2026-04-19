@@ -5,7 +5,6 @@ logger = logging.getLogger(__name__)
 import streamlit as st
 from modules.nav import SideBarLinks
 import requests
-from datetime import date, datetime
 
 st.set_page_config(layout="wide")
 
