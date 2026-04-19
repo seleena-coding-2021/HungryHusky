@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 import streamlit as st
 from modules.nav import SideBarLinks
 import requests
-from datetime import date
+from datetime import date, datetime
 
 st.set_page_config(layout="wide")
 
@@ -131,7 +131,7 @@ if rest_to_post:
         response = requests.post(f'http://web-api:4000/restaurants/restaurant/{rest_id}/waittime',
                     json={
                     "EstimatedMin": wait_min,
-                    "TimeStamp": date.today().isoformat(),
+                    "TimeStamp": datetime.now().isoformat(),
                     },
                     headers={"Content-Type": "application/json"}, timeout=10).json()
         if "error" not in response:
