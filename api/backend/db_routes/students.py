@@ -10,7 +10,11 @@ students = Blueprint("students", __name__)
 def get_saved_spots(student_id):
     cursor = get_db().cursor(dictionary=True)
     try:
-        cursor.execute("SELECT * FROM SavedSpot WHERE StudentId = %s", (student_id,))
+        cursor.execute('''SELECT DateAdded, Address, PriceRange,
+        Cuisine, DistFromCampus, Location, Notes, SavedId, r.Name as RestaurantName, dh.Name as HallName FROM SavedSpot s
+        LEFT JOIN Restaurant r on s.RestaurantId = r.RestaurantId
+        LEFT JOIN DiningHall dh on s.HallId = dh.HallId
+        WHERE StudentId = %s''', (student_id,))
         return jsonify(cursor.fetchall()), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
