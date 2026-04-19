@@ -35,6 +35,8 @@ def update_menu_item(menu_item_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+        
+
 
 # Get info on what cuisines students prefer
 @dining_halls.route("/dininghalls/<hall_id>/studentfeedback", methods=["GET"])
@@ -47,6 +49,18 @@ def get_cuisine_prefs(hall_id):
                         WHERE dh.HallId = %s
                         GROUP  BY dh.HallId, dh.Name, sf.CuisinePref
                         ORDER  BY dh.Name, Responses DESC;''', (hall_id,))
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        
+# Get all dining halls
+@dining_halls.route("/dininghalls", methods=["GET"])
+def get_all_halls():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT HallId, Name FROM DiningHall")
         return jsonify(cursor.fetchall()), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
