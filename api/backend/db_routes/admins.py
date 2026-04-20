@@ -91,6 +91,28 @@ def get_feedback():
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+        
+# GET /admins/usagestats — return usage stats with dining hall names
+@admins.route("/usagestats", methods=["GET"])
+def get_usage_stats():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute('''
+            SELECT  us.HallId,
+                    dh.Name         AS HallName,
+                    us.TimeStamp,
+                    us.VisitorCount,
+                    TIME_FORMAT(us.PeakHour, '%H:%i')  AS PeakHour,
+                    us.DayOfWeek
+            FROM    UsageStats  us
+            JOIN    DiningHall  dh ON dh.HallId = us.HallId
+            ORDER   BY us.VisitorCount DESC
+        ''')
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
  
  
 # PUT    /admins/feedback/{feedbackid} — update status or content of a submission

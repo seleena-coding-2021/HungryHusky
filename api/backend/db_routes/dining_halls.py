@@ -35,6 +35,8 @@ def update_menu_item(menu_item_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+        
+
 
 # Get info on what cuisines students prefer
 @dining_halls.route("/dininghalls/<hall_id>/studentfeedback", methods=["GET"])
@@ -47,6 +49,18 @@ def get_cuisine_prefs(hall_id):
                         WHERE dh.HallId = %s
                         GROUP  BY dh.HallId, dh.Name, sf.CuisinePref
                         ORDER  BY dh.Name, Responses DESC;''', (hall_id,))
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        
+# Get all dining halls
+@dining_halls.route("/dininghalls", methods=["GET"])
+def get_all_halls():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT HallId, Name FROM DiningHall")
         return jsonify(cursor.fetchall()), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
@@ -78,6 +92,57 @@ def update_dh_hours(hall_id, day_of_week):
         get_db().commit()
 
         return jsonify({"message": "OperatingHours updated successfully"}), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# GET /dininghalls/{hall_id}/menuitems — get all menu items for a dining hall
+@dining_halls.route('/dininghalls/<int:hall_id>/menuitems', methods=["GET"])
+def get_menu_items(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM MenuItem WHERE HallId = %s", (hall_id,))
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# POST /dininghalls/{hall_id}/menuitems — create a new menu item
+@dining_halls.route('/dininghalls/<int:hall_id>/menuitems', methods=["POST"])
+def create_menu_item(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        data = request.get_json()
+
+        required_fields = ["ItemName", "Category", "IsAvailable"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        valid_categories = ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert", "Other"]
+        if data["Category"] not in valid_categories:
+            return jsonify({"error": f"Category must be one of: {', '.join(valid_categories)}"}), 400
+
+        cursor.execute(
+            "INSERT INTO MenuItem (HallId, ItemName, Description, Category, IsAvailable) VALUES (%s, %s, %s, %s, %s)",
+            (hall_id, data["ItemName"], data.get("Description"), data["Category"], data["IsAvailable"])
+        )
+        get_db().commit()
+        return jsonify({"message": "Menu item created successfully", "itemId": cursor.lastrowid}), 201
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# GET /dininghalls/{hall_id}/stations — get all stations for a dining hall
+@dining_halls.route('/dininghalls/<int:hall_id>/stations', methods=["GET"])
+def get_stations(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM DiningStation WHERE HallId = %s", (hall_id,))
+        return jsonify(cursor.fetchall()), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
     finally:

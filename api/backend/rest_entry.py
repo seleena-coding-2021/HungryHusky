@@ -43,6 +43,7 @@ def create_app():
     app.register_blueprint(simple_routes)
     app.register_blueprint(ngos, url_prefix="/ngo")
     app.register_blueprint(restaurants, url_prefix="/restaurants")
+    app.register_blueprint(admins, url_prefix="/admins")  # add this
     app.register_blueprint(students)
     app.register_blueprint(dining_halls)
     app.register_blueprint(admins, url_prefix="/admins")
