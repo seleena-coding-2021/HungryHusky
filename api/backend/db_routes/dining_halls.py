@@ -96,3 +96,108 @@ def update_dh_hours(hall_id, day_of_week):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+
+# GET /dininghalls/{hall_id}/menuitems — get all menu items for a dining hall
+@dining_halls.route('/dininghalls/<int:hall_id>/menuitems', methods=["GET"])
+def get_menu_items(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM MenuItem WHERE HallId = %s", (hall_id,))
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# POST /dininghalls/{hall_id}/menuitems — create a new menu item
+@dining_halls.route('/dininghalls/<int:hall_id>/menuitems', methods=["POST"])
+def create_menu_item(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        data = request.get_json()
+
+        required_fields = ["ItemName", "Category", "IsAvailable"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        valid_categories = ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert", "Other"]
+        if data["Category"] not in valid_categories:
+            return jsonify({"error": f"Category must be one of: {', '.join(valid_categories)}"}), 400
+
+        cursor.execute(
+            "INSERT INTO MenuItem (HallId, ItemName, Description, Category, IsAvailable) VALUES (%s, %s, %s, %s, %s)",
+            (hall_id, data["ItemName"], data.get("Description"), data["Category"], data["IsAvailable"])
+        )
+        get_db().commit()
+        return jsonify({"message": "Menu item created successfully", "itemId": cursor.lastrowid}), 201
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+# GET /dininghalls/{hall_id}/stations — get all stations for a dining hall
+@dining_halls.route('/dininghalls/<int:hall_id>/stations', methods=["GET"])
+def get_stations(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM DiningStation WHERE HallId = %s", (hall_id,))
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        
+#put student feedback for a dining hall
+@dining_halls.route("/dininghalls/<int:hall_id>/studentfeedback", methods=["POST"])
+def create_student_feedback(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        data = request.get_json()
+
+        required_fields = ["StudentId", "DietaryRestriction", "SubmittedDate"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        valid_diets = [
+            "vegan", "vegetarian", "pescatarian", "gluten-free",
+            "halal", "kosher", "dairy-free", "nut-free", "egg-free"
+        ]
+
+        if data["DietaryRestriction"] not in valid_diets:
+            return jsonify({"error": "Invalid DietaryRestriction value"}), 400
+
+        valid_status = ["positive", "negative", "neutral"]
+        if "Status" in data and data["Status"] not in valid_status:
+            return jsonify({"error": "Invalid Status value"}), 400
+
+        # insert
+        query = """
+            INSERT INTO StudentFeedback
+            (StudentId, HallId, DietaryRestriction, Content, Status, CuisinePref, SubmittedDate)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+
+        cursor.execute(query, (
+            data["StudentId"],
+            hall_id,
+            data["DietaryRestriction"],
+            data.get("Content"),
+            data.get("Status"),
+            data.get("CuisinePref"),
+            data["SubmittedDate"]
+        ))
+
+        get_db().commit()
+
+        return jsonify({
+            "message": "Feedback submitted successfully",
+            "feedback_id": cursor.lastrowid
+        }), 201
+
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()

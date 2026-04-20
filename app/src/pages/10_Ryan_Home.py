@@ -10,7 +10,7 @@ st.set_page_config(layout='wide')
 SideBarLinks()
 
 st.title(f"Welcome, {st.session_state['first_name']}.")
-st.write('### What would you like to do today?')
+st.write('### Where would you like to go today?')
 
 if st.button('Restaurants',
              type='primary',
