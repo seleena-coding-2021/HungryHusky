@@ -147,3 +147,57 @@ def get_stations(hall_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+        
+#put student feedback for a dining hall
+@dining_halls.route("/dininghalls/<int:hall_id>/studentfeedback", methods=["POST"])
+def create_student_feedback(hall_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        data = request.get_json()
+
+        required_fields = ["StudentId", "DietaryRestriction", "SubmittedDate"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        valid_diets = [
+            "vegan", "vegetarian", "pescatarian", "gluten-free",
+            "halal", "kosher", "dairy-free", "nut-free", "egg-free"
+        ]
+
+        if data["DietaryRestriction"] not in valid_diets:
+            return jsonify({"error": "Invalid DietaryRestriction value"}), 400
+
+        valid_status = ["positive", "negative", "neutral"]
+        if "Status" in data and data["Status"] not in valid_status:
+            return jsonify({"error": "Invalid Status value"}), 400
+
+        # insert
+        query = """
+            INSERT INTO StudentFeedback
+            (StudentId, HallId, DietaryRestriction, Content, Status, CuisinePref, SubmittedDate)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+
+        cursor.execute(query, (
+            data["StudentId"],
+            hall_id,
+            data["DietaryRestriction"],
+            data.get("Content"),
+            data.get("Status"),
+            data.get("CuisinePref"),
+            data["SubmittedDate"]
+        ))
+
+        get_db().commit()
+
+        return jsonify({
+            "message": "Feedback submitted successfully",
+            "feedback_id": cursor.lastrowid
+        }), 201
+
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
