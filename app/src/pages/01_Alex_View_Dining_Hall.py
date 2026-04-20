@@ -25,10 +25,21 @@ st.write(f"### Hi, {st.session_state['first_name']}.")
 
 st.subheader("View dining halls below:", divider="gray")
 
-# get the countries from the world bank data
 dininghalls = requests.get('http://web-api:4000/dininghalls', timeout=10).json()
 
 try:
     st.dataframe(dininghalls, column_order=["Name", "Location", "CampusArea", "Capacity", "HallID" ])
 except:
     st.write("Could not connect to database to retrieve restaurants")
+    
+# view menu items
+st.subheader("View menu items:", divider="gray")
+
+dininghall_items = {d["Name"]: d["DiningHallId"] for d in dininghalls}
+
+selected_hall = st.selectbox("Select a dining hall", list(dininghall_items.keys()))
+
+menuitems = requests.get('https://web-api:4000/dininghalls')
+menu_items = {id["ItemName"] : i["ItemId"] for i in menuitems}
+
+selected_item = st.selectbox("Select a menu item", list(menu_items.keys()))
