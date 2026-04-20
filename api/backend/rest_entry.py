@@ -9,7 +9,8 @@ from backend.ngos.ngo_routes import ngos
 from backend.db_routes.restaurants import restaurants
 from backend.db_routes.students import students
 from backend.db_routes.dining_halls import dining_halls
-from backend.db_routes.admins import admins  # add this
+from backend.db_routes.admins import admins
+
 
 
 def create_app():
@@ -45,5 +46,7 @@ def create_app():
     app.register_blueprint(admins, url_prefix="/admins")  # add this
     app.register_blueprint(students)
     app.register_blueprint(dining_halls)
+    app.register_blueprint(admins, url_prefix="/admins")
+
 
     return app
