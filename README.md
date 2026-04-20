@@ -1,4 +1,4 @@
-# Spring 2026 CS 3200 Project Template
+# HungryHusky
 
 This is a template repo for Dr. Fontenot's Spring 2026 CS 3200 Course Project.
 
