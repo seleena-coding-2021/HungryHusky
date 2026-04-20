@@ -32,14 +32,31 @@ try:
 except:
     st.write("Could not connect to database to retrieve restaurants")
     
-# view menu items
-st.subheader("View menu items:", divider="gray")
+# view stations
+st.subheader("View stations:", divider="gray")
 
-dininghall_items = {d["Name"]: d["DiningHallId"] for d in dininghalls}
+dininghall_items = {d["Name"]: d["HallId"] for d in dininghalls}
 
 selected_hall = st.selectbox("Select a dining hall", list(dininghall_items.keys()))
+hall_id = dininghall_items[selected_hall]
 
-menuitems = requests.get('https://web-api:4000/dininghalls')
-menu_items = {id["ItemName"] : i["ItemId"] for i in menuitems}
+stations = requests.get(f'http://web-api:4000/dininghalls/{hall_id}/stations', timeout=10).json()
 
-selected_item = st.selectbox("Select a menu item", list(menu_items.keys()))
+try:
+    st.dataframe(stations, column_order=["StationId", "HallId", "ItemId", "Name", "WaitMinutes", "UpdatedAt" ])
+except:
+    st.write("Could not connect to database to retrieve stations")
+    
+# view menu items at dining hall
+st.subheader("View dining hall menu items:", divider="gray")
+
+dininghall_items2 = {d["Name"]: d["HallId"] for d in dininghalls}
+selected_hall2 = st.selectbox("Select dining hall", list(dininghall_items2.keys()))
+hall_id2 = dininghall_items2[selected_hall2]
+
+menu_items = requests.get(f'http://web-api:4000/dininghalls/{hall_id2}/menuitems', timeout=10).json()
+
+try:
+    st.dataframe(menu_items, column_order=["ItemId", "ItemName", "Description", "Category", "IsAvailable"])
+except:
+    st.write("Could not connect to database to retrieve menu items")
