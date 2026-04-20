@@ -59,6 +59,26 @@ def report(report_id):
     finally:
         cursor.close()
  
+@admins.route("/reports/<int:report_id>", methods=["PUT"])
+def update_report(report_id):
+    cursor = get_db().cursor(dictionary=True)
+    data = request.get_json()
+
+    # only update fields that were actually sent
+    allowed = ["Title", "Format", "StartDate", "EndDate"]
+    updates = {f: data[f] for f in allowed if f in data}
+    fields = [f"{f} = %s" for f in updates]
+    params = list(updates.values()) + [report_id]
+
+    try:
+        cursor.execute(f"UPDATE Report SET {', '.join(fields)} WHERE ReportId = %s", params)
+        get_db().commit()
+        return jsonify({"message": "Report updated!"}), 200
+    except Error as e:
+        current_app.logger.error(f'error updating report {report_id}: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
  
 # GET /admins/feedback — return all student feedback
 #
