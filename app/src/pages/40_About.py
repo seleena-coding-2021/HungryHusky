@@ -9,7 +9,8 @@ st.write("# About HungryHusky")
 
 st.markdown(
     """
-    This is a demo app for HungryHusky for our Introduction to Databases Class.  
+    This is a demo app for HungryHusky, a data-driven application that aims to improve the student
+    dining experience for our Introduction to Databases Class.  
     """
 )
 
