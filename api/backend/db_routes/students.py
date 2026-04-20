@@ -71,18 +71,6 @@ def delete_saved_spot(student_id, saved_id):
     get_db().commit()
     return 'Saved Spot successfully deleted'
 
-# Get all reviews written by a student
-@students.route("/students/<student_id>/reviews", methods=["GET"])
-def get_reviews(student_id):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT * FROM Review WHERE StudentId = %s", (student_id,))
-        return jsonify(cursor.fetchall()), 200
-    except Error as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
 # retrieve the students/{id}/allergen-profile route
 # required field: id
 # user stories: [Alex-4] [Alex-1]
