@@ -1,5 +1,5 @@
 # HungryHusky: A Data-Driven App
-## Link to Video Demo:
+## Link to Video Demo: https://drive.google.com/file/d/1wI4v8BTjShFWaT881wVB-x1lB-WCPajG/view
 ### Camila, Cindy, Rai, Seleena, Madison
 
 ## Overview
@@ -34,7 +34,7 @@ Ensure that you have the following installed on your computer:
 - MySQL
 - Python
 
-1. Create an .env file in the root directory. You can use the template in .env.template. Update the values accordingly.
+1. Create an .env file in the api directory. You can use the template in .env.template. Update the values accordingly.
 1. For running the testing containers:
      ` 1. docker compose up -d to start all the containers in the background`
       `1. docker compose down to shutdown and delete the containers`
