@@ -34,11 +34,11 @@ Ensure that you have the following installed on your computer:
 - Python
 
 1. Create an .env file in the root directory. You can use the template in .env.template. Update the values accordingly.
-2. For running the testing containers:
-      i. docker compose up -d to start all the containers in the background
-      ii. docker compose down to shutdown and delete the containers
-      iii. docker compose up db -d only start the database container (replace db with api or app for the other two services as needed)
-      iv. docker compose stop to "turn off" the containers but not delete them.
+1. For running the testing containers:
+     ` 1. docker compose up -d to start all the containers in the background`
+      `1. docker compose down to shutdown and delete the containers`
+      `1. docker compose up db -d only start the database container (replace db with api or app for the other two services as needed)`
+      `1. docker compose stop to "turn off" the containers but not delete them.`
 4. Access the link provided (in Docker) after running the previous command to see the Streamlit page. You should be able to navigate the user stories from here.
 5. To restart the container if there are any changes with any SQL files: 
-      i. From the root directory, run docker compose down db -v && docker compose up db -d
+      `1. From the root directory, run docker compose down db -v && docker compose up db -d`
