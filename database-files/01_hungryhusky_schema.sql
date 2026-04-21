@@ -221,7 +221,7 @@ CONSTRAINT fk16
 
 
 CREATE TABLE StudentFeedback(
-FeedbackSubmissionId int unsigned not null,
+FeedbackSubmissionId int unsigned auto_increment not null,
 DietaryRestriction enum('vegan','vegetarian','pescatarian', 'gluten-free', 'halal','kosher','dairy-free','nut-free','egg-free'),
 HallId int unsigned,
 Content mediumtext,

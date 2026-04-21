@@ -16,28 +16,23 @@ SideBarLinks()
 
 st.title("Restaurants")
 
-# all restaurants, filter by id, filter by distance
+# all restaurants, filter by distance
 st.subheader("Restaurant Filtering", divider="gray")
 
-search_id = st.text_input("Search for a restaurant by id")
-
 max_dist = st.selectbox(
-    "Filter by distance (mi):",
+    "Filter by distance within range:",
     ["5.0", "4.5", "4.0", "3.5", "3.0", "2.5",
      "2.0", "1.5", "1.0", "0.5", "0.0"]
 )
 
 params = {}
 
-if search_id:
-    params["name"] = search_id
-
 if max_dist:
-    params["max_dist"] = max_dist
+    params["maxDist"] = max_dist
 
 
 restaurants = requests.get(
-        "http://web-api:4000/restaurants",
+        "http://web-api:4000/restaurants/",
         params=params,
         timeout=10
     ).json()

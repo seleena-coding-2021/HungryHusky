@@ -152,8 +152,8 @@ def create_student_review(id):
 # update student's allergen profile
 # required fields: student id
 # user stories: [Alex-1]
-@students.route("/student/<int:id>/allergen-profile", methods=["PUT"])
-def update_allergen_profile(id):
+@students.route("/student/<int:stu_id>/allergen-profile", methods=["PUT"])
+def update_allergen_profile(stu_id):
     cursor = get_db().cursor(dictionary=True)
     try:
         data = request.get_json()
@@ -167,13 +167,13 @@ def update_allergen_profile(id):
 
         cursor.execute(
             "DELETE FROM StudentAllergen WHERE StudentId = %s",
-            (id,)
+            (stu_id,)
         )
 
         for allergen_id in allergen_ids:
             cursor.execute(
                 "INSERT INTO StudentAllergen (StudentId, AllergenId) VALUES (%s, %s)",
-                (id, allergen_id)
+                (stu_id, allergen_id)
             )
 
         get_db().commit()

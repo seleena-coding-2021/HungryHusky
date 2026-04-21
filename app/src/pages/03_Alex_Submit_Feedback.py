@@ -24,7 +24,9 @@ hall_options = {hall["Name"]: hall["HallId"] for hall in halls}
 
 selected_hall_name = st.selectbox("Select a dining hall",list(hall_options.keys()))
 
-student_id = st.number_input("Enter student ID")
+hall_id = st.number_input("Enter the hall id", step=1)
+
+student_id = st.number_input("Enter student ID", step=1)
 
 dietary_restriction = st.selectbox(
     "Dietary restriction",
@@ -42,7 +44,7 @@ status = st.selectbox(
 )
 
 cuisine_pref = st.selectbox(
-    "Cuisine preference (optional)",
+    "Cuisine preference*",
     ["", "italian", "chinese", "mexican", "mediterranean", "indian", "fusion", "american", "other"],
     key="feedback_cuisine"
 )
@@ -66,10 +68,11 @@ if st.button("Submit Dining Hall Feedback"):
 
     try:
         res = requests.post(
-            f"http://web-api:4000/dininghalls/{hall_id}/studentfeedback",
+            f"http://web-api:4000/dininghalls/{int(hall_id)}/studentfeedback",
             json=payload,
             timeout=10
         )
+        st.success("Feedback submitted successfully")
 
     except requests.exceptions.RequestException:
         st.error("Could not connect to database to submit feedback")

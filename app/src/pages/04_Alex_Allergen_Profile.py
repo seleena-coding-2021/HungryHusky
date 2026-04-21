@@ -112,7 +112,7 @@ if student_id.strip():
             ]
 
             payload = {
-                "allergen_ids": selected_ids
+                "AllergenIds": selected_ids
             }
 
             try:
@@ -121,6 +121,7 @@ if student_id.strip():
                     json=payload,
                     timeout=10
                 )
+                st.success("Profile updated successfully")
 
             except requests.exceptions.RequestException as e:
                 st.error(f"Request failed: {e}")

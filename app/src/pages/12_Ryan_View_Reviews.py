@@ -35,7 +35,7 @@ with st.container(border=True):
     stu_id = st.number_input("Student id*", min_value=0, step=1, key="stu_id")
     rating = st.radio("Rating*", [1, 2, 3, 4, 5])
     comment = st.text_input("Comments?")
-    price_rating = st.radio("Price Rating", ["", 1, 2, 3, 4, 5])
+    price_rating = st.radio("Price Rating*", ["", 1, 2, 3, 4, 5])
     allergen_flag = st.text_input("Allergen flags?")
 
     if review_type == "Restaurant":
