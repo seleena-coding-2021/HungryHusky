@@ -1,3 +1,6 @@
+# HungryHusky: A Data-Driven App
+### Camila, Cindy, Rai, Seleena, Madison
+
 ## Overview
 Eating well comes with challenges for students, who often have no reliable way to know if the food options fits their needs or whether the line is even worth it… Imagine a single app that allows students to find food on and around campus and that’s easy, reliable, and as simple as opening your phone.
 
