@@ -1,4 +1,5 @@
 # HungryHusky: A Data-Driven App
+## Link to Video Demo:
 ### Camila, Cindy, Rai, Seleena, Madison
 
 ## Overview
